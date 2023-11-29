@@ -24,7 +24,7 @@ interface Ad {
 }
 ```
 
-我们很自然会相当把这个过程拆成三个函数
+我们很自然会把这个过程拆成三个函数
 
 ```typescript
 async function getUserInfo() {
@@ -32,7 +32,7 @@ async function getUserInfo() {
 }
 
 async function getUserAds(rank: number) {
-  return (await axios.get('user/recommand-ads'), { rank }).data;
+  return (await axios.get('user/recommand-ads', { rank })).data;
 }
 
 async function main() {
@@ -82,7 +82,7 @@ async function getUserInfo() {
 
 async function getUserAds(rank: number) {
   try {
-    return (await axios.get('user/recommand-ads'), { rank }).data;
+    return (await axios.get('user/recommand-ads', { rank })).data;
   } catch(e) {
     console.error(e);
   }
