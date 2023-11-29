@@ -257,32 +257,34 @@ window.addEventListener('error', (error) => {
 
 2. log错误，一般是转换错误后，将错误打印到控制台，方便开发人员查看。
   当然还要涉及到怎么打印方便，比如我们打印webgl错误的时候，经常会伴随shader错误。
-  那么我需要有一段更好的打印方法来显示具体哪行代码错误
+  那么我需要有一段更好的打印方法来显示具体哪行代码错误，例如下面的代码
 
-    ```typescript
-    function getScriptErrorLinesLogMessage(
-      script: string, errorLine: number, showLines = 5
-    ) {
-      const lines = script.split('\n');
-      const lineIdx = errorLine - 1;
-      // 标记控制台的 字符串 css 注入点标记 %c，注意避开前后的空白字符
-      lines[lineIdx] = lines[lineIdx].replace(/(^\s*)/, '$1%c').replace(/(\s*$)/, '%c$1');
-
-      const start = Math.max(0, errorLine - showLines);
-      const end = Math.min(lines.length, errorLine + showLines);
-
-      return lines.slice(start, end).map((line, idx) => {
-        const lineNumber = idx + start + 1;
-        return `${lineNumber === errorLine ? '➡️\t' : '\t'}${lineNumber}\t${line}`;
-      }).join('\n');
-    }
-    ```
 3. 上报错误：交给sentry或者一些日志系统进行上报，自动报障。当然，后续还有很多流程。比如根据内网sourcemap分析错误堆栈，自动录入错误工单系统，对接issue tracker等
 
 4. 安抚用户：说白了最后一步可能就是得让用户知道到底什么情况了。
   比如 ```401 Unauthorized``` ，应该弹出登录框，或者转跳登录页。
   如果不是401或者其他特殊的错误，
   如果系统有国际化，应该在这个步骤进行文案的国际化
+
+```typescript
+// 处理一些内嵌语言的控制台显示效果
+function getScriptErrorLinesLogMessage(
+  script: string, errorLine: number, showLines = 5
+) {
+  const lines = script.split('\n');
+  const lineIdx = errorLine - 1;
+  // 标记控制台的 字符串 css 注入点标记 %c，注意避开前后的空白字符
+  lines[lineIdx] = lines[lineIdx].replace(/(^\s*)/, '$1%c').replace(/(\s*$)/, '%c$1');
+
+  const start = Math.max(0, errorLine - showLines);
+  const end = Math.min(lines.length, errorLine + showLines);
+
+  return lines.slice(start, end).map((line, idx) => {
+    const lineNumber = idx + start + 1;
+    return `${lineNumber === errorLine ? '➡️\t' : '\t'}${lineNumber}\t${line}`;
+  }).join('\n');
+}
+```
 
 
 ## 修饰错误或者业务上的捕获错误
